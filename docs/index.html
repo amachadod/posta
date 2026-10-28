@@ -1,0 +1,364 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Posta</title>
+<meta name="description" content="Posta reads your inbox every morning, tells you what matters, turns action items into Linear tasks and drafts your replies in Gmail. It never sends anything for you.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Young+Serif&family=Instrument+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a sorting office. The inbox on the left is the pile, the right side is what Posta did with each letter. A postage-stamp yellow is the single accent. */
+:root{
+  --bg:#eef1f4; --surface:#ffffff; --ink:#15203a; --muted:#5b6576; --line:#dbe0e7; --soft:#f3f5f8;
+  --navy:#1f3a8f; --stamp:#f2b705; --stamp-ink:#3d2c00;
+  --needs:#c2410c; --fyi:#2563eb; --skip:#6b7280; --sus:#b91c1c; --wait:#7c3aed; --ok:#15803d;
+  --f-display:"Young Serif",Georgia,"Times New Roman",serif;
+  --f-body:"Instrument Sans","Helvetica Neue",Arial,sans-serif;
+  --f-mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f141c; --surface:#161d28; --ink:#e6eaf2; --muted:#98a2b3; --line:#273041; --soft:#1c2533;
+  --navy:#9db4ff; --stamp:#f5c542; --stamp-ink:#2b2000;
+  --needs:#fb923c; --fyi:#7aa7ff; --skip:#9ca3af; --sus:#f87171; --wait:#b79cff; --ok:#4ade80; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f141c; --surface:#161d28; --ink:#e6eaf2; --muted:#98a2b3; --line:#273041; --soft:#1c2533;
+  --navy:#9db4ff; --stamp:#f5c542; --stamp-ink:#2b2000;
+  --needs:#fb923c; --fyi:#7aa7ff; --skip:#9ca3af; --sus:#f87171; --wait:#b79cff; --ok:#4ade80; color-scheme:dark}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.55 var(--f-body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0 56px}
+a{color:var(--navy)}
+:focus-visible{outline:2px solid var(--navy);outline-offset:2px}
+.wrap{max-width:1200px;margin:0 auto}
+
+.top{display:flex;justify-content:space-between;align-items:center;gap:16px;padding-block:20px;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;font-family:var(--f-display);font-size:22px;text-decoration:none;color:var(--ink)}
+.stamp{width:26px;height:30px;background:var(--stamp);display:grid;place-items:center;color:var(--stamp-ink);font:700 13px var(--f-body);
+  -webkit-mask:radial-gradient(circle 2.2px at 2.2px 2.2px,#0000 98%,#000) -2.2px -2.2px/5.5px 5.5px;mask:radial-gradient(circle 2.2px at 2.2px 2.2px,#0000 98%,#000) -2.2px -2.2px/5.5px 5.5px}
+.toplinks{display:flex;gap:18px;font-size:14px;flex-wrap:wrap}
+.toplinks a{color:var(--muted);text-decoration:none}.toplinks a:hover{color:var(--ink)}
+
+.hero{padding-block:32px 28px;display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:40px;align-items:end;border-bottom:1px solid var(--line)}
+@media (max-width:860px){.hero{grid-template-columns:minmax(0,1fr);gap:18px}}
+.hero h1{font-family:var(--f-display);font-weight:400;font-size:clamp(2.2rem,5.4vw,3.9rem);line-height:1.05;letter-spacing:-.01em;margin:0;text-wrap:balance}
+.hero h1 mark{background:linear-gradient(transparent 62%,var(--stamp) 62%);color:inherit;padding:0 .08em}
+.hero p{margin:0;color:var(--muted);font-size:16.5px;max-width:54ch;text-wrap:pretty}
+.byline{font-family:var(--f-mono);font-size:12px;color:var(--muted);margin-top:14px}
+
+.flow{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));margin-block:28px 44px;border:1px solid var(--line);border-radius:10px;background:var(--surface);overflow:hidden}
+@media (max-width:760px){.flow{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.step{padding:18px;border-right:1px solid var(--line);min-width:0}
+.step:last-child{border-right:0}
+@media (max-width:760px){.step:nth-child(2){border-right:0}.step:nth-child(-n+2){border-bottom:1px solid var(--line)}}
+.step .n{font-family:var(--f-mono);font-size:11px;color:var(--muted);letter-spacing:.08em}
+.step h3{margin:6px 0 4px;font-size:16px}
+.step p{margin:0;font-size:13.5px;color:var(--muted)}
+.tool{display:inline-block;margin-top:10px;font-family:var(--f-mono);font-size:11.5px;padding:2px 8px;border-radius:999px;background:var(--soft);color:var(--ink)}
+
+.sec{margin-top:56px}
+.sec-h{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;margin-bottom:16px}
+.sec-h h2{margin:0;font-family:var(--f-display);font-weight:400;font-size:clamp(1.5rem,2.8vw,2.1rem);text-wrap:balance}
+.sec-h p{margin:0;color:var(--muted);font-size:14px;max-width:62ch}
+.panel{background:var(--surface);border:1px solid var(--line);border-radius:10px;min-width:0}
+
+/* Briefing */
+.brief{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:920px){.brief{grid-template-columns:minmax(0,1fr)}}
+.mailframe{overflow:hidden}
+.mailbar{display:flex;flex-wrap:wrap;gap:4px 12px;padding:12px 16px;border-bottom:1px solid var(--line);font-size:13px;color:var(--muted)}
+.mailbar b{color:var(--ink);font-weight:600}
+iframe{display:block;width:100%;border:0;height:900px;background:#f6f4f1}
+.did{padding:18px 20px}
+.did h3{margin:0 0 12px;font-size:15px}
+.tally{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden;margin-bottom:16px}
+.tally div{background:var(--surface);padding:12px 14px}
+.tally b{display:block;font-family:var(--f-display);font-weight:400;font-size:28px;line-height:1.1;font-variant-numeric:tabular-nums}
+.tally span{font-size:12.5px;color:var(--muted)}
+.did ul{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:14px}
+
+/* Inbox */
+.inbox{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:920px){.inbox{grid-template-columns:minmax(0,1fr)}}
+.list{list-style:none;margin:0;padding:6px}
+.item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;padding:10px 12px;border-radius:8px;cursor:pointer;border:1px solid transparent}
+.item:hover{background:var(--soft)}
+.item[aria-selected="true"]{background:var(--soft);border-color:var(--line)}
+.item .f{font-weight:600;font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.item .s{grid-column:1/-1;font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cat{font-family:var(--f-mono);font-size:10.5px;letter-spacing:.04em;text-transform:uppercase;padding:1px 7px;border-radius:4px;color:var(--c);border:1px solid color-mix(in srgb,var(--c) 45%,transparent);background:color-mix(in srgb,var(--c) 10%,transparent);white-space:nowrap;align-self:center}
+.reader{display:flex;flex-direction:column}
+.mail{padding:18px 20px;border-bottom:1px solid var(--line)}
+.mail h3{margin:0 0 6px;font-size:18px;text-wrap:balance}
+.mail .meta{font-size:13px;color:var(--muted);margin-bottom:12px}
+.mail pre{margin:0;font:15px/1.6 var(--f-body);white-space:pre-wrap;word-wrap:break-word;color:var(--ink)}
+.out{padding:18px 20px;background:var(--soft);border-radius:0 0 10px 10px;display:flex;flex-direction:column;gap:14px}
+.out .lab{font-family:var(--f-mono);font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.headline{font-size:15.5px;font-weight:600}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px}
+.card .row{display:flex;flex-wrap:wrap;gap:6px 8px;align-items:center;margin-top:6px;font-size:12.5px;color:var(--muted)}
+.pill{display:inline-flex;align-items:center;gap:5px;padding:1px 8px;border-radius:999px;border:1px solid var(--line);font-size:12px;color:var(--ink);background:var(--surface);white-space:nowrap}
+.pill.warn{border-color:var(--needs);color:var(--needs)}
+.idk{font-family:var(--f-mono);font-size:11.5px;color:var(--muted)}
+.draft{white-space:pre-wrap;font:14.5px/1.6 var(--f-body);margin:6px 0 0}
+.note{font-size:14px;color:var(--muted);margin:0}
+.alert{border-left:3px solid var(--sus);padding:10px 12px;background:var(--surface);border-radius:0 8px 8px 0;font-size:14px}
+
+/* Waiting */
+.waitlist{list-style:none;margin:0;padding:0}
+.waitlist li{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;padding:12px 18px;border-top:1px solid var(--line);font-size:14px}
+.waitlist li:first-child{border-top:0}
+.waitlist span{color:var(--muted)}
+
+/* Playbooks */
+.pb{display:grid;grid-template-columns:minmax(0,250px) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:760px){.pb{grid-template-columns:minmax(0,1fr)}}
+.pb-list{display:flex;flex-direction:column;gap:4px}
+.pb-list button{font:500 14.5px var(--f-body);text-align:left;padding:10px 12px;border-radius:8px;border:1px solid transparent;background:transparent;color:var(--ink);cursor:pointer;display:flex;justify-content:space-between;gap:8px}
+.pb-list button:hover{background:var(--surface)}
+.pb-list button[aria-selected="true"]{background:var(--surface);border-color:var(--line)}
+.pb-list small{font-family:var(--f-mono);font-size:11px;color:var(--muted)}
+.pb-body{padding:18px 22px 22px}
+.pb-body .file{font-family:var(--f-mono);font-size:12px;color:var(--muted);margin-bottom:10px}
+.pb-body h4{margin:16px 0 6px;font-size:15px}
+.pb-body ul{margin:0;padding-left:18px}
+.pb-body li,.pb-body p{font-size:14.5px;max-width:72ch;margin:4px 0}
+
+.cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
+.cols.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:860px){.cols,.cols.three{grid-template-columns:minmax(0,1fr)}}
+.box{padding:18px 20px}
+.box h3{margin:0 0 6px;font-size:16px}
+.box p{margin:0 0 10px;font-size:14px;color:var(--muted)}
+.box ol,.box ul{margin:0;padding-left:18px;font-size:14px;display:flex;flex-direction:column;gap:5px}
+.box code,.pb-body code{font-family:var(--f-mono);font-size:12px;background:var(--soft);padding:1px 5px;border-radius:4px;color:var(--ink)}
+.tag{display:inline-block;font-family:var(--f-mono);font-size:11px;padding:1px 8px;border-radius:999px;background:var(--stamp);color:var(--stamp-ink);margin-bottom:8px}
+
+footer{margin-top:56px;padding-top:18px;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <a class="brand" href="#"><span class="stamp" aria-hidden="true">P</span>Posta</a>
+    <nav class="toplinks" aria-label="Page">
+      <a href="#briefing">Briefing</a><a href="#inbox">Inbox</a><a href="#playbooks">Playbooks</a><a href="#setup">Set up</a>
+      <a href="https://github.com/amachadod/posta">GitHub</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <h1>Your inbox, <mark>read before you are</mark>.</h1>
+    <div>
+      <p>Every morning Posta reads your new email, tells you what needs you, turns real work into Linear tasks and drafts your replies in Gmail. It never sends anything for you. Built for anyone with an inbox: account managers, sales, marketing, customer success.</p>
+      <div class="byline">Portfolio project by Alberto Machado Domínguez · The inbox below is fictional</div>
+    </div>
+  </section>
+
+  <div class="flow" role="list" aria-label="How Posta works">
+    <div class="step" role="listitem"><span class="n">01 · READ</span><h3>Reads new email</h3><p>Newsletters and promotions are counted and skipped before any AI sees them.</p><span class="tool">Gmail API</span></div>
+    <div class="step" role="listitem"><span class="n">02 · TRIAGE</span><h3>Decides what matters</h3><p>Claude sorts each email using your role's playbook and flags anything suspicious.</p><span class="tool">Claude API</span></div>
+    <div class="step" role="listitem"><span class="n">03 · ACT</span><h3>Tasks and drafts</h3><p>Real work becomes a Linear task. People waiting get a draft reply in your voice.</p><span class="tool">Linear + Gmail drafts</span></div>
+    <div class="step" role="listitem"><span class="n">04 · BRIEF</span><h3>Morning briefing</h3><p>One email to you before work: needs you, waiting on others, worth knowing.</p><span class="tool">GitHub Actions</span></div>
+  </div>
+
+  <section class="sec" id="briefing" style="margin-top:0">
+    <div class="sec-h">
+      <h2>The briefing Inês gets at 7:40</h2>
+      <p>Inês is a fictional account manager at an agency. This is the real email Posta builds from her example inbox, exactly as it would arrive.</p>
+    </div>
+    <div class="brief">
+      <div class="panel mailframe">
+        <div class="mailbar"><span>From <b>Posta</b> (sent from her own account, to herself)</span><span id="subj"></span></div>
+        <iframe id="frame" title="Morning briefing email" loading="lazy"></iframe>
+      </div>
+      <div class="panel did">
+        <h3>What Posta did overnight</h3>
+        <div class="tally" id="tally"></div>
+        <ul id="didlist"></ul>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec" id="inbox">
+    <div class="sec-h">
+      <h2>Thirteen emails, one by one</h2>
+      <p>Pick an email to see what Posta decided and why: the task it created, the draft it wrote, or why it did nothing.</p>
+    </div>
+    <div class="inbox">
+      <div class="panel"><ul class="list" id="list" role="listbox" aria-label="Inbox"></ul></div>
+      <div class="panel reader" id="reader" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-h">
+      <h2>Waiting on others</h2>
+      <p>Threads where Inês sent the last message and nobody has replied for three days or more. Worked out from email dates only; no AI, no email bodies.</p>
+    </div>
+    <div class="panel"><ul class="waitlist" id="waiting"></ul></div>
+  </section>
+
+  <section class="sec" id="playbooks">
+    <div class="sec-h">
+      <h2>Playbooks and your voice, in plain English</h2>
+      <p>"Everyone" applies to any job. Your role adds what matters for your work. The voice file makes drafts sound like you. Edit the text, no code.</p>
+    </div>
+    <div class="pb">
+      <div class="pb-list" role="tablist" aria-label="Playbooks" id="pb-list"></div>
+      <div class="panel pb-body" id="pb-body"></div>
+    </div>
+  </section>
+
+  <section class="sec" id="setup">
+    <div class="sec-h">
+      <h2>Run it on your own inbox</h2>
+      <p>Needs a Claude API key and, for tasks, a Linear workspace. Full step-by-step guide in the README.</p>
+    </div>
+    <div class="cols">
+      <div class="panel box">
+        <span class="tag">Recommended · free</span>
+        <h3>GitHub schedule · Gmail</h3>
+        <p>GitHub runs Posta every weekday morning. No server, no Zapier. Includes the morning briefing.</p>
+        <ol>
+          <li>Make a private copy of the repo</li>
+          <li>Create a Google OAuth client (about 15 minutes, once)</li>
+          <li>Run <code>npm run authorize</code> on your computer to connect Gmail</li>
+          <li>Add the keys as GitHub secrets and set <code>POSTA_ENABLED</code></li>
+        </ol>
+      </div>
+      <div class="panel box">
+        <h3>Zapier · Gmail or Outlook</h3>
+        <p>Each email is handled the moment it arrives. Easier sign-in, works with Outlook, but needs Zapier and a small server. No morning briefing.</p>
+        <ol>
+          <li>Deploy to Vercel (the <code>api/</code> folder is ready)</li>
+          <li>Zap: new email → POST to Posta</li>
+          <li>Zap: Posta's reply → create a draft in Gmail or Outlook</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="sec-h"><h2>Design decisions</h2></div>
+    <div class="cols three">
+      <div class="panel box"><h3>It never sends for you</h3><p>Replies are saved as drafts. The only email Posta sends is your briefing, and only to your own address.</p></div>
+      <div class="panel box"><h3>Email is untrusted</h3><p>Anyone can email you. Posta treats every email as data, never instructions, and takes no action on suspicious ones. See the fake bank-details email above.</p></div>
+      <div class="panel box"><h3>Private by default</h3><p>Posta stores nothing and logs only counts. Run it from a private copy of the repo, because logs of public repositories are visible to anyone.</p></div>
+    </div>
+  </section>
+
+  <footer>
+    <span>Posta · MIT licence · Alberto Machado Domínguez · Also see <a href="https://amachadod.github.io/minuta/">Minuta</a> and <a href="https://amachadod.github.io/plano/">Plano</a></span>
+    <span>Gmail, Claude, Linear and Zapier are trademarks of their owners. Posta is an independent project.</span>
+  </footer>
+</div>
+
+<script src="data.js"></script>
+<script>
+(function(){
+const D = window.POSTA;
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s ?? "").replace(/[&<>"]/g, (c) => ({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;" }[c]));
+const day = (iso) => iso ? new Date(iso.length === 10 ? iso + "T12:00:00Z" : iso).toLocaleDateString("en-GB", { weekday:"short", day:"numeric", month:"short", timeZone:"UTC" }) : "";
+const time = (iso) => new Date(iso).toLocaleString("en-GB", { weekday:"short", hour:"2-digit", minute:"2-digit", timeZone:"Europe/Lisbon" });
+const CAT = {
+  needs_you: ["Needs you", "--needs"], fyi: ["Worth knowing", "--fyi"], skip: ["Skipped", "--skip"],
+  prefiltered: ["Skipped", "--skip"], suspicious: ["Be careful", "--sus"],
+};
+const cat = (o) => `<span class="cat" style="--c:var(${CAT[o][1]})">${CAT[o][0]}</span>`;
+
+// Briefing
+$("subj").innerHTML = `Subject: <b>${esc(D.briefing.subject)}</b>`;
+const fr = $("frame");
+fr.srcdoc = D.briefing.html;
+fr.addEventListener("load", () => { try { fr.style.height = (fr.contentDocument.documentElement.scrollHeight + 4) + "px"; } catch (e) {} });
+const pre = D.emails.filter((e) => e.outcome === "prefiltered").length;
+const sus = D.emails.filter((e) => e.outcome === "suspicious").length;
+$("tally").innerHTML = [
+  [D.emails.length, "emails read"], [D.stats.tasks, "Linear tasks created"],
+  [D.stats.drafts, "replies drafted"], [D.briefing.counts.waiting, "threads waiting on others"],
+].map(([n, l]) => `<div><b>${n}</b><span>${l}</span></div>`).join("");
+const flagged = D.emails.filter((e) => e.task && e.task.flagged).length;
+$("didlist").innerHTML = [
+  `${pre} newsletters and notifications skipped before Claude saw them.`,
+  `${sus} suspicious email (fake bank details with hidden instructions to the AI): no task, no draft, flagged in the briefing.`,
+  `${flagged} task marked "Needs review" and left unassigned, because Claude was less than 60% sure.`,
+  `No drafts for automated senders like Google Ads or Meta. Nothing was sent to anyone except the briefing to Inês.`,
+].map((t) => `<li>${esc(t)}</li>`).join("");
+
+// Inbox
+let cur = 0;
+$("list").innerHTML = D.emails.map((e, i) => `<li class="item" role="option" tabindex="0" aria-selected="${i===0}" data-i="${i}">
+  <span class="f">${esc(e.from.name || e.from.email)}</span>${cat(e.outcome)}
+  <span class="s">${esc(e.subject)}</span></li>`).join("");
+const pick = (i) => {
+  cur = i;
+  [...$("list").children].forEach((li, k) => li.setAttribute("aria-selected", k === i));
+  const e = D.emails[i], t = e.triage;
+  let out = "";
+  if (e.outcome === "prefiltered") {
+    out = `<p class="note">Skipped before triage: Gmail marks it as a promotion or social notification, and it has an unsubscribe header. Claude never reads it. It's counted in the briefing footer.</p>`;
+  } else if (e.outcome === "suspicious") {
+    out = `<div class="headline">${esc(t.headline)}</div>
+      <div class="alert"><b>Suspicious.</b> ${esc(t.suspicious_reason)}. Posta created no task and no draft, and listed it under "Be careful" in the briefing.</div>
+      <p class="note">The example answer from Claude even included a task and a reply. Posta's checks threw both away, because suspicious email never triggers an action.</p>`;
+  } else {
+    out = `<div class="headline">${esc(t.headline)}</div>`;
+    if (t.deadline) out += `<div><span class="pill warn">Due ${day(t.deadline)}</span></div>`;
+    if (e.task) {
+      out += `<div><div class="lab" style="margin-bottom:6px">Linear task</div><div class="card"><div style="font-weight:600">${esc(t.task.title)}</div>
+        <div class="row"><span class="idk">${esc(e.task.identifier)}</span><span class="pill">${esc(t.task.priority)}</span>
+        ${e.task.due ? `<span class="pill">Due ${day(e.task.due)}</span>` : ""}
+        <span class="pill">${e.task.flagged ? "Unassigned" : "Assigned to Inês"}</span>${e.task.flagged ? `<span class="pill warn">Needs review · ${Math.round(t.task.confidence*100)}% sure</span>` : ""}</div>
+        ${t.task.description ? `<p class="note" style="margin-top:8px">${esc(t.task.description)}</p>` : ""}</div></div>`;
+    }
+    if (e.draft) out += `<div><div class="lab" style="margin-bottom:6px">Draft saved in Gmail · not sent</div><div class="card"><pre class="draft">${esc(e.draft)}</pre></div></div>`;
+    else if (e.outcome === "needs_you" && e.automated) out += `<p class="note">No draft: this is an automated sender, nobody is waiting for a reply.</p>`;
+    if (!e.task && !e.draft && e.outcome !== "needs_you") out += `<p class="note">${e.outcome === "skip" ? "Platform marketing: skipped, counted in the footer." : "Nothing to do. Listed under \"Worth knowing\" so Inês doesn't need to open it."}</p>`;
+  }
+  $("reader").innerHTML = `<div class="mail"><h3>${esc(e.subject)}</h3>
+    <div class="meta">${esc(e.from.name ? `${e.from.name} <${e.from.email}>` : e.from.email)} · ${time(e.date)}</div>
+    <pre>${esc(e.body)}</pre></div>
+    <div class="out"><div style="display:flex;justify-content:space-between;align-items:center;gap:8px"><span class="lab">What Posta did</span>${cat(e.outcome)}</div>${out}</div>`;
+};
+$("list").addEventListener("click", (ev) => { const li = ev.target.closest(".item"); if (li) pick(+li.dataset.i); });
+$("list").addEventListener("keydown", (ev) => {
+  if (ev.key === "Enter" || ev.key === " ") { const li = ev.target.closest(".item"); if (li) { ev.preventDefault(); pick(+li.dataset.i); } }
+  if (ev.key === "ArrowDown" || ev.key === "ArrowUp") { ev.preventDefault(); const n = Math.max(0, Math.min(D.emails.length - 1, cur + (ev.key === "ArrowDown" ? 1 : -1))); pick(n); $("list").children[n].focus(); }
+});
+pick(0);
+
+// Waiting
+$("waiting").innerHTML = D.waiting.map((w) => `<li><b>${esc(w.subject)}</b><span>${esc(w.to.map((a) => a.name || a.email).join(", "))} · no reply for ${w.days} days</span></li>`).join("");
+
+// Playbooks + voice
+function md(text){
+  const out = []; let list = false;
+  const inline = (s) => esc(s).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>").replace(/`(.+?)`/g, "<code>$1</code>");
+  for (const raw of text.split("\n")) {
+    const l = raw.trimEnd();
+    if (/^- /.test(l)) { if (!list) { out.push("<ul>"); list = true; } out.push(`<li>${inline(l.slice(2))}</li>`); continue; }
+    if (list) { out.push("</ul>"); list = false; }
+    if (/^## /.test(l)) out.push(`<h4>${inline(l.slice(3))}</h4>`);
+    else if (l.trim()) out.push(`<p>${inline(l)}</p>`);
+  }
+  if (list) out.push("</ul>");
+  return out.join("");
+}
+const tabs = [...D.playbooks.map((p) => ({ label: p.team, sub: p.id === D.playbook ? "Inês" : p.id === "everyone" ? "always" : p.linearTeam, file: `playbooks/${p.id}.md`, body: p.instructions })),
+  { label: "Your voice", sub: "drafts", file: "voice.md", body: D.voice }];
+$("pb-list").innerHTML = tabs.map((t, i) => `<button role="tab" aria-selected="${i===0}" data-i="${i}"><span>${esc(t.label)}</span><small>${esc(t.sub)}</small></button>`).join("");
+$("pb-list").addEventListener("click", (ev) => { const b = ev.target.closest("button"); if (b) showPb(+b.dataset.i); });
+function showPb(i){
+  [...$("pb-list").children].forEach((b, k) => b.setAttribute("aria-selected", k === i));
+  $("pb-body").innerHTML = `<div class="file">${esc(tabs[i].file)}</div>${md(tabs[i].body)}`;
+}
+showPb(0);
+})();
+</script>
+</body>
+</html>
