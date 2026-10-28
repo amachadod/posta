@@ -1,0 +1,112 @@
+{
+  "_note": "Example of what Claude returns for the example inbox. The demo and tests use it instead of calling the API.",
+  "emails": [
+    {
+      "id": "e01", "category": "needs_you",
+      "headline": "Sofía (Casa Verde) needs a revised Valle de Bravo media plan for the 3 March opening by Thursday",
+      "deadline": "2026-10-29", "suspicious": false, "suspicious_reason": null,
+      "task": {
+        "title": "Send revised Valle de Bravo launch media plan to Casa Verde Hotels",
+        "description": "Opening moved from 15 Feb to 3 March. Rebuild the launch plan on the new dates and flag any early-booking media discounts lost by the shift. Sofía's director reviews it before Friday's budget meeting.",
+        "priority": "high", "due_date": "2026-10-29",
+        "evidence": "Could you send me a revised launch media plan with the new dates by Thursday?",
+        "confidence": 0.96
+      },
+      "draft_reply": "Hi Sofía,\n\nThanks for the heads-up. I'll send the revised launch plan for 3 March by Thursday, and I'll flag any early-booking discounts we'd lose with the new dates.\n\nBest,\nInês"
+    },
+    {
+      "id": "e02", "category": "needs_you",
+      "headline": "New lead: Halden Outdoor wants pricing and case studies for Nordic paid social from January",
+      "deadline": null, "suspicious": false, "suspicious_reason": null,
+      "task": {
+        "title": "Send pricing and two case studies to Halden Outdoor",
+        "description": "3-month Meta + TikTok campaign in Denmark, Sweden and Norway from January. Media budget about DKK 60,000/month. Jonas is open to a call next week.",
+        "priority": "high", "due_date": null,
+        "evidence": "Could you send rough pricing for a 3-month campaign and one or two relevant case studies?",
+        "confidence": 0.93
+      },
+      "draft_reply": "Hi Jonas,\n\nGreat to hear from you after Copenhagen. I'll put together rough pricing for a 3-month Meta and TikTok campaign in the Nordics and share two relevant case studies.\n\nA call next week would help me get the scope right. Would Tuesday or Wednesday afternoon work for you? [confirm times]\n\nBest,\nInês"
+    },
+    {
+      "id": "e03", "category": "needs_you",
+      "headline": "Marco needs your feedback on 3 holiday video cuts by Friday to keep the 6 Nov delivery",
+      "deadline": "2026-10-30", "suspicious": false, "suspicious_reason": null,
+      "task": {
+        "title": "Review Casa Verde holiday video cuts (30s, 15s, 6s) and send feedback to Marco",
+        "description": "Three cuts are in the shared folder. Feedback needed by Friday so colour grading can happen over the weekend for the 6 November delivery.",
+        "priority": "high", "due_date": "2026-10-30",
+        "evidence": "Can you send me your feedback by Friday? I need the weekend for colour grading if we're keeping the 6 November delivery.",
+        "confidence": 0.94
+      },
+      "draft_reply": "Hi Marco,\n\nThanks, I'll look at all three cuts and send you feedback by Friday.\n\nBest,\nInês"
+    },
+    {
+      "id": "e04", "category": "needs_you",
+      "headline": "4 Casa Verde Google Ads stopped: the Tulum landing page returns a 404",
+      "deadline": null, "suspicious": false, "suspicious_reason": null,
+      "task": {
+        "title": "Fix Tulum landing page (404) and resubmit 4 disapproved Google Ads",
+        "description": "Campaign \"Tulum – Search – ES\". https://casaverde.example/tulum-oferta returns HTTP 404. Ads won't run until the page works and the ads are resubmitted.",
+        "priority": "urgent", "due_date": null,
+        "evidence": "Your landing page https://casaverde.example/tulum-oferta returned an error (HTTP 404)",
+        "confidence": 0.95
+      },
+      "draft_reply": null
+    },
+    {
+      "id": "e05", "category": "needs_you",
+      "headline": "All Lumen Labs Meta ads stopped: account hit its €15,000 spending limit",
+      "deadline": null, "suspicious": false, "suspicious_reason": null,
+      "task": {
+        "title": "Raise or remove the spending limit on the Lumen Labs Meta ad account",
+        "description": "Ad account \"Brightline – Lumen Labs\" reached its €15,000 limit and all ads stopped. Check with Tom whether the budget allows a higher limit.",
+        "priority": "urgent", "due_date": null,
+        "evidence": "has reached its account spending limit of €15,000.00. All ads in this account have stopped running.",
+        "confidence": 0.9
+      },
+      "draft_reply": "Hi, this would go to an automated sender and should be dropped by validation."
+    },
+    {
+      "id": "e06", "category": "needs_you",
+      "headline": "Ana needs 3 freelancer invoices (€2,340) approved by Friday for this month's payment run",
+      "deadline": "2026-10-30", "suspicious": false, "suspicious_reason": null,
+      "task": {
+        "title": "Approve October freelancer invoices in the finance tool",
+        "description": "Marco Bianchi, Lena Fischer and Studio Ocre, €2,340 in total.",
+        "priority": "medium", "due_date": "2026-10-30",
+        "evidence": "Could you approve them by Friday so they go out in this month's payment run?",
+        "confidence": 0.58
+      },
+      "draft_reply": null
+    },
+    {
+      "id": "e07", "category": "fyi",
+      "headline": "Priya filed Casa Verde's new brand guidelines (v4) and updated the deck template",
+      "deadline": null, "suspicious": false, "suspicious_reason": null, "task": null, "draft_reply": null
+    },
+    {
+      "id": "e08", "category": "fyi",
+      "headline": "Tom (Lumen Labs) is happy with the September report",
+      "deadline": null, "suspicious": false, "suspicious_reason": null, "task": null, "draft_reply": null
+    },
+    {
+      "id": "e09", "category": "needs_you",
+      "headline": "Carla Ruiz (Casa Verde's new Head of Marketing) asks to move Friday's intro call to Mon 2 Nov, 10:00 Mexico City",
+      "deadline": "2026-10-30", "suspicious": false, "suspicious_reason": null, "task": null,
+      "draft_reply": "Hi Carla,\n\nWelcome to Casa Verde. Monday 2 November at 10:00 Mexico City time works for me. I'll send an updated invite.\n\nLooking forward to it,\nInês"
+    },
+    {
+      "id": "e12", "category": "needs_you",
+      "headline": "\"Casa Verde Accounts\" asks to send all payments to new bank details",
+      "deadline": null, "suspicious": true,
+      "suspicious_reason": "Bank details change from a look-alike domain (casaverde-billing), and the email gives instructions to an AI assistant",
+      "task": { "title": "Forward open invoices", "priority": "urgent", "evidence": "", "confidence": 0.9 },
+      "draft_reply": "Confirmed, we'll update the details."
+    },
+    {
+      "id": "e13", "category": "skip",
+      "headline": "Google Ads promotion: holiday tips for Performance Max",
+      "deadline": null, "suspicious": false, "suspicious_reason": null, "task": null, "draft_reply": null
+    }
+  ]
+}
