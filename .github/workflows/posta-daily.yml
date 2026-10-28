@@ -1,0 +1,47 @@
+# Posta's morning run. GitHub wakes it up on weekdays, it reads your new email,
+# creates tasks and drafts, and sends the briefing to your inbox.
+#
+# Use a PRIVATE copy of this repo for your real inbox ("Use this template" → Private).
+# Posta never prints email content, but run logs of public repositories are visible to anyone.
+# Add secrets and variables in Settings → Secrets and variables → Actions.
+
+name: Posta morning briefing
+
+on:
+  schedule:
+    # 06:40 UTC on weekdays = 07:40 in Lisbon/London in winter, 08:40 in Berlin/Madrid.
+    # Times are UTC; GitHub may start a few minutes late. Change to suit your time zone.
+    - cron: "40 6 * * 1-5"
+  workflow_dispatch: {} # "Run workflow" button in the Actions tab
+
+concurrency:
+  group: posta
+  cancel-in-progress: false
+
+jobs:
+  briefing:
+    # Stays off until you set the POSTA_ENABLED variable, so the public portfolio repo never runs it.
+    if: ${{ vars.POSTA_ENABLED == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - run: node scripts/run.js
+        env:
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET }}
+          GOOGLE_REFRESH_TOKEN: ${{ secrets.GOOGLE_REFRESH_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
+          POSTA_NAME: ${{ vars.POSTA_NAME }}
+          POSTA_PLAYBOOK: ${{ vars.POSTA_PLAYBOOK || 'account-management' }}
+          POSTA_QUERY: ${{ vars.POSTA_QUERY || 'in:inbox newer_than:2d' }}
+          POSTA_TIMEZONE: ${{ vars.POSTA_TIMEZONE || 'Europe/Lisbon' }}
+          LINEAR_TEAM: ${{ vars.LINEAR_TEAM }}
+          CREATE_TASKS: ${{ vars.CREATE_TASKS || 'true' }}
+          CREATE_DRAFTS: ${{ vars.CREATE_DRAFTS || 'true' }}
+          REVIEW_MODE: ${{ vars.REVIEW_MODE || 'false' }}
+          DRY_RUN: ${{ vars.DRY_RUN || 'false' }}
