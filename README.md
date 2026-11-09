@@ -167,3 +167,6 @@ Node.js 20+, no dependencies. Gmail API with OAuth 2.0 (PKCE), Claude Messages A
 ## License
 
 MIT. Gmail, Claude, Linear and Zapier are trademarks of their respective owners. Posta is an independent project and is not affiliated with them.
+
+---
+Built by Alberto Machado Domínguez · [albertomachdom@gmail.com](mailto:albertomachdom@gmail.com) · [LinkedIn](https://www.linkedin.com/in/alberto-machado-dom%C3%ADnguez-708290251/)
